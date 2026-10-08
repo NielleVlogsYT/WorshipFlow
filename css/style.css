@@ -515,6 +515,37 @@ label {
   max-width: 420px;
 }
 
+.availability-toolbar {
+  align-items: end;
+}
+
+.availability-toolbar label {
+  margin: 0 0 7px;
+}
+
+.availability-toolbar .input {
+  max-width: 300px;
+}
+
+.availability-preview {
+  margin: 14px 0 18px;
+  padding: 13px;
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 12px;
+}
+
+.availability-preview > strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.availability-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

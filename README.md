@@ -121,6 +121,7 @@ A newly registered user receives a new musician record automatically through `bo
 - Archive musicians
 - Create schedules
 - Assign musicians
+- View musician availability for schedule dates
 
 ## 9. User capabilities
 
@@ -129,10 +130,15 @@ A newly registered user receives a new musician record automatically through `bo
 - View worship lineups
 - View My Lineup
 - View their dedicated positions
+- Mark or remove their availability for upcoming Sunday and Thursday services
+
+The Availability tab is available to accounts linked to a musician. Admins can see who is available for a selected date while creating or editing a schedule.
+
+If v4 is already deployed, rerun `supabase/schema_v4.sql` to create the availability table and its row-level security policies before deploying the updated frontend.
 
 ## 10. Deployment
 
-After running the SQL migration:
+After running the SQL migration (including the `musician_availability` table and its policies):
 
 1. Update `js/config.js`.
 2. Upload/redeploy the v4 files to Vercel.

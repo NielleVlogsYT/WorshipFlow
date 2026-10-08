@@ -122,6 +122,14 @@ $$;
 
 grant execute on function public.is_admin() to authenticated;
 
+create table if not exists public.musician_availability (
+  musician_id uuid not null references public.musicians(id) on delete cascade,
+  service_date date not null,
+  created_at timestamptz not null default now(),
+  primary key (musician_id, service_date),
+  check (extract(dow from service_date) in (0, 4))
+);
+
 do $$
 declare r record;
 begin
@@ -129,7 +137,7 @@ begin
     select schemaname, tablename, policyname
     from pg_policies
     where schemaname = 'public'
-      and tablename in ('positions','profiles','musicians','musician_positions','schedules','schedule_assignments')
+      and tablename in ('positions','profiles','musicians','musician_positions','schedules','schedule_assignments','musician_availability')
   loop
     execute format('drop policy if exists %I on %I.%I', r.policyname, r.schemaname, r.tablename);
   end loop;
@@ -188,8 +196,40 @@ for select to authenticated using (true);
 create policy "assignments admin write" on public.schedule_assignments
 for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
+-- Musicians can manage only their own future Sunday/Thursday availability.
+alter table public.musician_availability enable row level security;
+drop policy if exists "availability owner or admin read" on public.musician_availability;
+drop policy if exists "availability owner insert" on public.musician_availability;
+drop policy if exists "availability owner delete" on public.musician_availability;
+create policy "availability owner or admin read" on public.musician_availability
+for select to authenticated using (
+  public.is_admin()
+  or exists(
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_availability.musician_id
+  )
+);
+create policy "availability owner insert" on public.musician_availability
+for insert to authenticated with check (
+  exists(
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_availability.musician_id
+  )
+  and musician_availability.service_date >= current_date
+);
+create policy "availability owner delete" on public.musician_availability
+for delete to authenticated using (
+  exists(
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_availability.musician_id
+  )
+);
+
 --index for lineup queries.
 create index if not exists idx_profiles_musician_id on public.profiles(musician_id);
 create index if not exists idx_assignments_musician_id on public.schedule_assignments(musician_id);
 create index if not exists idx_assignments_schedule_id on public.schedule_assignments(schedule_id);
-
+create index if not exists idx_musician_availability_service_date on public.musician_availability(service_date);

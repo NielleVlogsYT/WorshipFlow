@@ -31,6 +31,7 @@
 <button class="nav active" data-view="dashboard">⌂ <span>Dashboard</span></button>
 <button class="nav" data-view="calendar">▦ <span>Calendar</span></button>
 <button class="nav" data-view="lineup">♫ <span>My Lineup</span></button>
+<button class="nav" id="availabilityNav" data-view="availability">◷ <span>Availability</span></button>
 <button class="nav admin-only" data-view="users">♙ <span>User Management</span></button>
 <button class="nav admin-only" data-view="musicians">⚙ <span>Musicians</span></button>
 </aside>
@@ -42,6 +43,7 @@
 </section>
 <section id="calendarView" class="view hidden"><div class="page-head"><div><p class="eyebrow">SCHEDULE</p><h2>Calendar</h2><p class="muted">Tap a service to view the lineup.</p></div></div><div class="glass-card section-card"><div class="calendar-head"><button class="icon-btn" id="prevMonth">‹</button><h3 id="calendarTitle"></h3><button class="icon-btn" id="nextMonth">›</button></div><div id="calendar" class="calendar"></div></div></section>
 <section id="lineupView" class="view hidden"><div class="page-head"><div><p class="eyebrow">MY LINEUP</p><h2>My Lineup</h2><p class="muted">Your assigned worship services.</p></div></div><div id="myLineup" class="schedule-list"></div></section>
+<section id="availabilityView" class="view hidden"><div class="page-head"><div><p class="eyebrow">MY AVAILABILITY</p><h2>Availability</h2><p class="muted">Let the team know which upcoming Sunday and Thursday services you can attend.</p></div></div><div class="glass-card section-card"><div class="toolbar availability-toolbar"><label for="availabilityDate">Available service date</label><input id="availabilityDate" class="input" type="date"><button id="saveAvailabilityBtn" class="btn btn-primary">Mark Available</button></div><p id="availabilityHelp" class="muted">Choose a future Sunday or Thursday.</p><div id="myAvailability" class="schedule-list"></div></div></section>
 <section id="usersView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>User Management</h2><p class="muted">Manage accounts, roles, status and positions.</p></div></div><div class="glass-card section-card"><div class="toolbar"><input id="userSearch" class="input" placeholder="Search name or email"><select id="roleFilter" class="input"><option value="">All roles</option><option value="admin">Admin</option><option value="user">User</option></select></div><div id="usersTable" class="table-wrap"></div></div></section>
 <section id="musiciansView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>Musicians</h2><p class="muted">Edit or archive musicians and their dedicated positions.</p></div><button class="btn btn-primary" id="addMusicianBtn">+ Add Musician</button></div><div class="glass-card section-card"><div id="musicianList" class="schedule-list"></div></div></section>
 </main></div></div>
