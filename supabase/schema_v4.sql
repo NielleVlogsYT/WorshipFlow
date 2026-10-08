@@ -125,10 +125,14 @@ grant execute on function public.is_admin() to authenticated;
 create table if not exists public.musician_availability (
   musician_id uuid not null references public.musicians(id) on delete cascade,
   service_date date not null,
+  status text not null default 'available' check (status in ('available','not_available')),
   created_at timestamptz not null default now(),
   primary key (musician_id, service_date),
   check (extract(dow from service_date) in (0, 4))
 );
+alter table public.musician_availability
+  add column if not exists status text not null default 'available'
+  check (status in ('available','not_available'));
 
 do $$
 declare r record;
@@ -200,6 +204,7 @@ for all to authenticated using (public.is_admin()) with check (public.is_admin()
 alter table public.musician_availability enable row level security;
 drop policy if exists "availability owner or admin read" on public.musician_availability;
 drop policy if exists "availability owner insert" on public.musician_availability;
+drop policy if exists "availability owner update" on public.musician_availability;
 drop policy if exists "availability owner delete" on public.musician_availability;
 create policy "availability owner or admin read" on public.musician_availability
 for select to authenticated using (
@@ -212,6 +217,22 @@ for select to authenticated using (
 );
 create policy "availability owner insert" on public.musician_availability
 for insert to authenticated with check (
+  exists(
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_availability.musician_id
+  )
+  and musician_availability.service_date >= current_date
+);
+create policy "availability owner update" on public.musician_availability
+for update to authenticated using (
+  exists(
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_availability.musician_id
+  )
+  and musician_availability.service_date >= current_date
+) with check (
   exists(
     select 1 from public.profiles
     where profiles.id = auth.uid()
