@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WorshipFlow — Musician Scheduler</title><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card glass-card">
+    <div class="brand auth-brand"><div class="brand-icon"></div><div><h1>WorshipFlow</h1><p>Worship Team Scheduler</p></div></div>
+    <div class="auth-tabs"><button id="loginTab" class="tab active">Login</button><button id="signupTab" class="tab">Sign up</button></div>
+    <form id="loginForm">
+      <label>Email</label><input id="loginEmail" class="input" type="email" autocomplete="email" required>
+      <label>Password</label><input id="loginPassword" class="input" type="password" autocomplete="current-password" required><label><input type="checkbox" onclick="myFunction('loginPassword')"> Show password</label>
+      <button class="btn btn-primary full">Login</button><p id="loginMsg" class="form-msg"></p>
+    </form>
+    <form id="signupForm" class="hidden">
+      <label>Full name</label><input id="signupName" class="input" autocomplete="name" required placeholder="Juan Dela Cruz">
+      <label>Email</label><input id="signupEmail" class="input" type="email" autocomplete="email" required>
+      <label>Password</label><input id="signupPassword" class="input" type="password" autocomplete="new-password" minlength="6" required><label><input type="checkbox" onclick="myFunction('signupPassword')"> Show password</label>
+      <label>Dedicated position(s)</label><div id="signupPositions" class="checkbox-grid compact"></div>
+      <button class="btn btn-primary full">Create account</button><p id="signupMsg" class="form-msg"></p>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<header class="topbar"><div class="brand"><div class="brand-icon"></div><div><h1>WorshipFlow</h1><p>Worship Team Scheduler</p></div></div><div class="top-actions"><span id="userBadge" class="user-badge"></span><button id="logoutBtn" class="btn btn-secondary">Logout</button></div></header>
+<div class="layout">
+<aside class="sidebar">
+<button class="nav active" data-view="dashboard">⌂ <span>Dashboard</span></button>
+<button class="nav" data-view="calendar">▦ <span>Calendar</span></button>
+<button class="nav" data-view="lineup">♫ <span>My Lineup</span></button>
+<button class="nav admin-only" data-view="users">♙ <span>User Management</span></button>
+<button class="nav admin-only" data-view="musicians">⚙ <span>Musicians</span></button>
+</aside>
+<main class="content">
+<section id="dashboardView" class="view">
+  <div class="page-head"><div><p class="eyebrow">WELCOME</p><h2 id="welcomeTitle">Dashboard</h2><p class="muted">Your worship team at a glance.</p></div><button class="btn btn-primary admin-only" id="newScheduleBtn">+ New Schedule</button></div>
+  <div class="stats-grid"><div class="glass-card stat-card"><span>Upcoming Services</span><strong id="statUpcoming">0</strong></div><div class="glass-card stat-card"><span>Team Members</span><strong id="statUsers">0</strong></div><div class="glass-card stat-card"><span>This Month</span><strong id="statMonth">0</strong></div></div>
+  <div class="grid-2"><div class="glass-card section-card"><div class="section-head"><div><h3>Services</h3><p class="muted">Upcoming worship schedules.</p></div></div><div id="nextServices"></div></div><div class="glass-card section-card"><div class="section-head"><div><h3>My Positions</h3><p class="muted">Positions from your account.</p></div></div><div id="myPositions"></div></div></div>
+</section>
+<section id="calendarView" class="view hidden"><div class="page-head"><div><p class="eyebrow">SCHEDULE</p><h2>Calendar</h2><p class="muted">Tap a service to view the lineup.</p></div></div><div class="glass-card section-card"><div class="calendar-head"><button class="icon-btn" id="prevMonth">‹</button><h3 id="calendarTitle"></h3><button class="icon-btn" id="nextMonth">›</button></div><div id="calendar" class="calendar"></div></div></section>
+<section id="lineupView" class="view hidden"><div class="page-head"><div><p class="eyebrow">MY LINEUP</p><h2>My Lineup</h2><p class="muted">Your assigned worship services.</p></div></div><div id="myLineup" class="schedule-list"></div></section>
+<section id="usersView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>User Management</h2><p class="muted">Manage accounts, roles, status and positions.</p></div></div><div class="glass-card section-card"><div class="toolbar"><input id="userSearch" class="input" placeholder="Search name or email"><select id="roleFilter" class="input"><option value="">All roles</option><option value="admin">Admin</option><option value="user">User</option></select></div><div id="usersTable" class="table-wrap"></div></div></section>
+<section id="musiciansView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>Musicians</h2><p class="muted">Edit or archive musicians and their dedicated positions.</p></div><button class="btn btn-primary" id="addMusicianBtn">+ Add Musician</button></div><div class="glass-card section-card"><div id="musicianList" class="schedule-list"></div></div></section>
+</main></div></div>
+<div id="modal" class="modal hidden"><div id="modalBox" class="modal-box glass-card"></div></div><div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  
+</script><script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/app.js"></script>
+</body></html>
