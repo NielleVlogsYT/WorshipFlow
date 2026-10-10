@@ -5,7 +5,34 @@
 <title>WorshipFlow — Musician Scheduler</title><link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<div class="sea" aria-hidden="true"></div>
+
+
+  
 <div id="authScreen" class="auth-screen">
+
+<div class="auth-floating-boxes" aria-hidden="true">
+  <span style="--left: 8%;  --size: 24px; --duration: 18s; --delay: 0s;"></span>
+  <span style="--left: 22%; --size: 32px; --duration: 22s; --delay: 3s;"></span>
+  <span style="--left: 38%; --size: 20px; --duration: 16s; --delay: 6s;"></span>
+  <span style="--left: 57%; --size: 36px; --duration: 24s; --delay: 2s;"></span>
+  <span style="--left: 73%; --size: 26px; --duration: 19s; --delay: 8s;"></span>
+  <span style="--left: 90%; --size: 30px; --duration: 21s; --delay: 5s;"></span>
+</div>
+
+  <div class="auth-carousel" aria-hidden="true">
+  <div class="auth-carousel-track">
+    <img src="src/worship-1.jpg" alt="">
+    <img src="src/worship-2.jpg" alt="">
+    <img src="src/worship-3.jpg" alt="">
+    <img src="src/worship-4.jpg" alt="">
+    <img src="src/worship-1.jpg" alt="">
+    <img src="src//worship-2.jpg" alt="">
+    <img src="src/worship-3.jpg" alt="">
+    <img src="src/worship-4.jpg" alt="">
+  </div>
+</div>
   <div class="auth-card glass-card">
     <div class="brand auth-brand"><div class="brand-icon"></div><div><h1>WorshipFlow</h1><p>Worship Team Scheduler</p></div></div>
     <div class="auth-tabs"><button id="loginTab" class="tab active">Login</button><button id="signupTab" class="tab">Sign up</button></div>
@@ -28,6 +55,16 @@
 <header class="topbar"><div class="brand"><div class="brand-icon"></div><div><h1>WorshipFlow</h1><p>Worship Team Scheduler</p></div></div><div class="top-actions"><span id="userBadge" class="user-badge"></span><button id="logoutBtn" class="btn btn-secondary">Logout</button></div></header>
 <div class="layout">
 <aside class="sidebar">
+
+<div class="floating-boxes" aria-hidden="true">
+  <span style="--left: 15%; --size: 14px; --duration: 12s; --delay: 0s;"></span>
+  <span style="--left: 75%; --size: 22px; --duration: 16s; --delay: 2s;"></span>
+  <span style="--left: 45%; --size: 10px; --duration: 10s; --delay: 4s;"></span>
+  <span style="--left: 88%; --size: 17px; --duration: 14s; --delay: 6s;"></span>
+  <span style="--left: 30%; --size: 20px; --duration: 18s; --delay: 3s;"></span>
+  <span style="--left: 60%; --size: 12px; --duration: 13s; --delay: 8s;"></span>
+</div>
+
 <button class="nav active" data-view="dashboard">⌂ <span>Dashboard</span></button>
 <button class="nav" data-view="calendar">▦ <span>Calendar</span></button>
 <button class="nav" data-view="lineup">♫ <span>My Lineup</span></button>
@@ -51,4 +88,36 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
   
 </script><script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/app.js"></script>
+<script>
+  const sea = document.querySelector('.sea');
+
+  for (let i = 0; i < 100; i++) {
+    const wave = document.createElement('div');
+    wave.className = 'wave';
+
+    const fade = document.createElement('div');
+    fade.className = 'wave-fade';
+
+    const translate = document.createElement('div');
+    translate.className = 'wave-translate';
+
+    const skew = document.createElement('div');
+    skew.className = 'wave-skew';
+
+    const graphic = document.createElement('div');
+    graphic.className = 'wave-graphic';
+
+    skew.appendChild(graphic);
+    translate.appendChild(skew);
+    fade.appendChild(translate);
+    wave.appendChild(fade);
+    sea.appendChild(wave);
+
+    const delay = -(i * 2000 / 100);
+
+    fade.style.animationDelay = `${delay}ms`;
+    translate.style.animationDelay = `${delay - 1000}ms`;
+    skew.style.animationDelay = `${delay}ms`;
+  }
+</script>
 </body></html>
