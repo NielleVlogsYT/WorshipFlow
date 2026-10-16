@@ -18,6 +18,36 @@ alter table public.profiles add column if not exists status text not null defaul
 alter table public.profiles add column if not exists created_at timestamptz not null default now();
 alter table public.profiles add column if not exists updated_at timestamptz not null default now();
 
+create unique index if not exists profiles_name_unique_ci
+on public.profiles (lower(btrim(name)))
+where btrim(name) <> '';
+
+create or replace function public.signup_name_exists(p_name text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, auth
+as $$
+  select case
+    when nullif(btrim(p_name), '') is null then false
+    else
+      exists (
+        select 1
+        from public.profiles
+        where lower(btrim(name)) = lower(btrim(p_name))
+      )
+      or exists (
+        select 1
+        from auth.users
+        where lower(btrim(raw_user_meta_data->>'full_name')) = lower(btrim(p_name))
+      )
+  end;
+$$;
+
+revoke all on function public.signup_name_exists(text) from public;
+grant execute on function public.signup_name_exists(text) to anon, authenticated;
+
 
 drop trigger if exists on_auth_user_created on auth.users;
 
@@ -104,6 +134,52 @@ $$;
 
 grant execute on function public.bootstrap_my_account() to authenticated;
 
+create or replace function public.update_my_profile(p_name text)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  updated_profile public.profiles%rowtype;
+  current_email text;
+begin
+  if auth.uid() is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  if trim(coalesce(p_name, '')) = '' then
+    raise exception 'Name is required';
+  end if;
+
+  select email into current_email
+  from auth.users
+  where id = auth.uid();
+
+  update public.profiles
+  set name = trim(p_name),
+      email = coalesce(current_email, email),
+      updated_at = now()
+  where id = auth.uid()
+  returning * into updated_profile;
+
+  if updated_profile.id is null then
+    raise exception 'Profile not found';
+  end if;
+
+  if updated_profile.musician_id is not null then
+    update public.musicians
+    set name = trim(p_name)
+    where id = updated_profile.musician_id;
+  end if;
+
+  return updated_profile;
+end;
+$$;
+
+revoke all on function public.update_my_profile(text) from public;
+grant execute on function public.update_my_profile(text) to authenticated;
+
 -- Admin helper. SECURITY DEFINER avoids RLS recursion when checking profiles.
 create or replace function public.is_admin()
 returns boolean
@@ -181,6 +257,39 @@ create policy "musician_positions authenticated read" on public.musician_positio
 for select to authenticated using (true);
 create policy "musician_positions admin write" on public.musician_positions
 for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "musician_positions owner insert" on public.musician_positions;
+drop policy if exists "musician_positions owner update" on public.musician_positions;
+drop policy if exists "musician_positions owner delete" on public.musician_positions;
+create policy "musician_positions owner insert" on public.musician_positions
+for insert to authenticated with check (
+  exists (
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_positions.musician_id
+  )
+);
+create policy "musician_positions owner update" on public.musician_positions
+for update to authenticated using (
+  exists (
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_positions.musician_id
+  )
+) with check (
+  exists (
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_positions.musician_id
+  )
+);
+create policy "musician_positions owner delete" on public.musician_positions
+for delete to authenticated using (
+  exists (
+    select 1 from public.profiles
+    where profiles.id = auth.uid()
+      and profiles.musician_id = musician_positions.musician_id
+  )
+);
 
 -- Schedules
 alter table public.schedules enable row level security;

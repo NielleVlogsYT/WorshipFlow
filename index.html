@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WorshipFlow — Musician Scheduler</title><link rel="stylesheet" href="css/style.css">
+<title>WorshipFlow — Musician Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -33,28 +37,78 @@
     <img src="src/worship-4.jpg" alt="">
   </div>
 </div>
-  <div class="auth-card glass-card">
-    <div class="brand auth-brand"><div class="brand-icon"></div><div><h1>WorshipFlow</h1><p>Worship Team Scheduler</p></div></div>
-    <div class="auth-tabs"><button id="loginTab" class="tab active">Login</button><button id="signupTab" class="tab">Sign up</button></div>
+
+  <main class="auth-layout">
+    <section class="auth-intro" aria-labelledby="welcomeHeading">
+      <div class="brand auth-brand"><div class="brand-icon"></div><div><h1 id="welcomeHeading">WorshipFLOW</h1><p>(Online Musician Scheduler for CMA)</p></div></div>
+      <button id="continueAuth" class="btn btn-primary continue-btn" type="button">Continue</button>
+    </section>
+    <section class="auth-card glass-card" aria-label="Account access">
     <form id="loginForm">
-      <label>Email</label><input id="loginEmail" class="input" type="email" autocomplete="email" required>
-      <label>Password</label><input id="loginPassword" class="input" type="password" autocomplete="current-password" required><label><input type="checkbox" onclick="myFunction('loginPassword')"> Show password</label>
-      <button class="btn btn-primary full">Login</button><p id="loginMsg" class="form-msg"></p>
+      <div class="auth-card-heading"><p class="eyebrow">WELCOME BACK</p><h2>Log in to WorshipFLOW</h2><p class="muted">Your team and schedule are waiting.</p></div>
+      <label for="loginEmail">Email</label><input id="loginEmail" class="input" type="email" autocomplete="email" required>
+      <div class="password-label-row"><label for="loginPassword">Password</label><button id="forgotPassword" class="text-link forgot-link" type="button">Forgot password?</button></div>
+      <div class="password-field"><input id="loginPassword" class="input" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-target="loginPassword" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="m4 4 16 16"></path></svg></button></div>
+      <button class="btn btn-primary full">Log in</button><p id="loginMsg" class="form-msg" aria-live="polite"></p>
+      <p class="auth-switch">New to WorshipFLOW? <button id="signupLink" class="text-link" type="button">Sign up now</button></p>
     </form>
     <form id="signupForm" class="hidden">
-      <label>Full name</label><input id="signupName" class="input" autocomplete="name" required placeholder="Juan Dela Cruz">
-      <label>Email</label><input id="signupEmail" class="input" type="email" autocomplete="email" required>
-      <label>Password</label><input id="signupPassword" class="input" type="password" autocomplete="new-password" minlength="6" required><label><input type="checkbox" onclick="myFunction('signupPassword')"> Show password</label>
+      <div class="auth-card-heading"><p class="eyebrow">JOIN YOUR TEAM</p><h2>Create your account</h2><p class="muted">Sign up to coordinate your worship schedule.</p></div>
+      <label for="signupName">Full name</label><input id="signupName" class="input" autocomplete="name" required placeholder="Juan Dela Cruz">
+      <label for="signupEmail">Email</label><input id="signupEmail" class="input" type="email" autocomplete="email" required>
+      <label for="signupPassword">Password</label><div class="password-field"><input id="signupPassword" class="input" type="password" autocomplete="new-password" minlength="6" required><button class="password-toggle" type="button" data-password-target="signupPassword" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="m4 4 16 16"></path></svg></button></div>
       <label>Dedicated position(s)</label><div id="signupPositions" class="checkbox-grid compact"></div>
-      <button class="btn btn-primary full">Create account</button><p id="signupMsg" class="form-msg"></p>
+      <button class="btn btn-primary full">Create account</button><p id="signupMsg" class="form-msg" aria-live="polite"></p>
+      <p class="auth-switch">Already have an account? <button id="loginLink" class="text-link" type="button">Log in</button></p>
     </form>
-  </div>
+    <form id="recoveryForm" class="hidden">
+      <div class="auth-card-heading"><p class="eyebrow">SECURE YOUR ACCOUNT</p><h2>Choose a new password</h2><p class="muted">Use at least 6 characters for your new password.</p></div>
+      <label for="recoveryPassword">New password</label><div class="password-field"><input id="recoveryPassword" class="input" type="password" autocomplete="new-password" minlength="6" required><button class="password-toggle" type="button" data-password-target="recoveryPassword" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="m4 4 16 16"></path></svg></button></div>
+      <label for="recoveryPasswordConfirm">Confirm new password</label><div class="password-field"><input id="recoveryPasswordConfirm" class="input" type="password" autocomplete="new-password" minlength="6" required><button class="password-toggle" type="button" data-password-target="recoveryPasswordConfirm" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="m4 4 16 16"></path></svg></button></div>
+      <button class="btn btn-primary full">Update password</button><p id="recoveryMsg" class="form-msg" aria-live="polite"></p>
+    </form>
+    </section>
+  </main>
+</div>
+
+<div id="passwordResetDialog" class="password-reset-overlay hidden" role="presentation">
+  <section class="password-reset-card glass-card" role="dialog" aria-modal="true" aria-labelledby="passwordResetTitle" aria-describedby="passwordResetDescription">
+    <button id="closePasswordReset" class="password-reset-close" type="button" aria-label="Close password reset dialog">&times;</button>
+    <p class="eyebrow">ACCOUNT RECOVERY</p>
+    <h2 id="passwordResetTitle">Forgot your password?</h2>
+    <p id="passwordResetDescription" class="muted">Enter the email address for your account and we’ll send you a password reset link.</p>
+    <form id="passwordResetForm">
+      <label for="passwordResetEmail">Email</label>
+      <input id="passwordResetEmail" class="input" type="email" autocomplete="email" required>
+      <button id="passwordResetSubmit" class="btn btn-primary full" type="submit">Send reset email</button>
+      <p id="passwordResetMessage" class="form-msg" aria-live="polite"></p>
+    </form>
+  </section>
 </div>
 
 <div id="app" class="hidden">
-<header class="topbar"><div class="brand"><div class="brand-icon"></div><div><h1>WorshipFlow</h1><p>Worship Team Scheduler</p></div></div><div class="top-actions"><span id="userBadge" class="user-badge"></span><button id="logoutBtn" class="btn btn-secondary">Logout</button></div></header>
+<div class="dashboard-background" aria-hidden="true">
+  <div class="dashboard-carousel-track">
+    <img src="src/worship-1.jpg" alt="">
+    <img src="src/worship-2.jpg" alt="">
+    <img src="src/worship-3.jpg" alt="">
+    <img src="src/worship-4.jpg" alt="">
+    <img src="src/worship-1.jpg" alt="">
+    <img src="src/worship-2.jpg" alt="">
+    <img src="src/worship-3.jpg" alt="">
+    <img src="src/worship-4.jpg" alt="">
+  </div>
+  <div class="dashboard-floating-boxes">
+    <span style="--left: 8%; --size: 24px; --duration: 18s; --delay: 0s;"></span>
+    <span style="--left: 22%; --size: 32px; --duration: 22s; --delay: 3s;"></span>
+    <span style="--left: 57%; --size: 36px; --duration: 24s; --delay: 2s;"></span>
+    <span style="--left: 73%; --size: 26px; --duration: 19s; --delay: 8s;"></span>
+    <span style="--left: 90%; --size: 30px; --duration: 21s; --delay: 5s;"></span>
+  </div>
+</div>
+<header class="topbar"><button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Collapse navigation" aria-controls="sidebar" aria-expanded="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button><div class="brand"><div class="brand-icon"></div><div><h1>WorshipFlow</h1><p>Worship Team Scheduler</p></div></div><div class="top-actions"><span id="userBadge" class="user-badge"></span><button id="logoutBtn" class="btn btn-secondary">Logout</button></div></header>
 <div class="layout">
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
 
 <div class="floating-boxes" aria-hidden="true">
   <span style="--left: 15%; --size: 14px; --duration: 12s; --delay: 0s;"></span>
@@ -69,6 +123,7 @@
 <button class="nav" data-view="calendar">▦ <span>Calendar</span></button>
 <button class="nav" data-view="lineup">♫ <span>My Lineup</span></button>
 <button class="nav" id="availabilityNav" data-view="availability">◷ <span>Availability</span></button>
+<button class="nav" id="profileNav" data-view="profile">♙ <span>Update Profile</span></button>
 <button class="nav admin-only" data-view="users">♙ <span>User Management</span></button>
 <button class="nav admin-only" data-view="musicians">⚙ <span>Musicians</span></button>
 </aside>
@@ -76,48 +131,36 @@
 <section id="dashboardView" class="view">
   <div class="page-head"><div><p class="eyebrow">WELCOME</p><h2 id="welcomeTitle">Dashboard</h2><p class="muted">Your worship team at a glance.</p></div><button class="btn btn-primary admin-only" id="newScheduleBtn">+ New Schedule</button></div>
   <div class="stats-grid"><div class="glass-card stat-card"><span>Upcoming Services</span><strong id="statUpcoming">0</strong></div><div class="glass-card stat-card"><span>Team Members</span><strong id="statUsers">0</strong></div><div class="glass-card stat-card"><span>This Month</span><strong id="statMonth">0</strong></div></div>
+  <div id="scheduleConflictNotice" class="schedule-conflict-notice hidden" role="alert" aria-live="assertive"></div>
   <div class="grid-2"><div class="glass-card section-card"><div class="section-head"><div><h3>Services</h3><p class="muted">Upcoming worship schedules.</p></div></div><div id="nextServices"></div></div><div class="glass-card section-card"><div class="section-head"><div><h3>My Positions</h3><p class="muted">Positions from your account.</p></div></div><div id="myPositions"></div></div></div>
 </section>
 <section id="calendarView" class="view hidden"><div class="page-head"><div><p class="eyebrow">SCHEDULE</p><h2>Calendar</h2><p class="muted">Tap a service to view the lineup.</p></div></div><div class="glass-card section-card"><div class="calendar-head"><button class="icon-btn" id="prevMonth">‹</button><h3 id="calendarTitle"></h3><button class="icon-btn" id="nextMonth">›</button></div><div id="calendar" class="calendar"></div></div></section>
 <section id="lineupView" class="view hidden"><div class="page-head"><div><p class="eyebrow">MY LINEUP</p><h2>My Lineup</h2><p class="muted">Your assigned worship services.</p></div></div><div id="myLineup" class="schedule-list"></div></section>
 <section id="availabilityView" class="view hidden"><div class="page-head"><div><p class="eyebrow">MY AVAILABILITY</p><h2>Availability</h2><p class="muted">Drag a status onto a Sunday or Thursday to update your availability.</p></div></div><div class="glass-card section-card"><div class="availability-toolbar"><div class="availability-markers" aria-label="Availability markers"><button class="availability-marker available" draggable="true" data-status="available" aria-pressed="false"><span aria-hidden="true">✓</span> Available</button><button class="availability-marker unavailable" draggable="true" data-status="not_available" aria-pressed="false"><span aria-hidden="true">×</span> Not available</button></div><p id="availabilityHelp" class="muted">Drag a marker onto a future Sunday or Thursday. On touch devices, tap a marker, then tap a date.</p><button class="btn btn-primary" id="saveAvailabilityBtn" type="button" disabled>Save Changes</button></div><div class="calendar-head"><button class="icon-btn" id="prevAvailabilityMonth" aria-label="Previous month">‹</button><h3 id="availabilityCalendarTitle"></h3><button class="icon-btn" id="nextAvailabilityMonth" aria-label="Next month">›</button></div><div id="availabilityCalendar" class="availability-calendar" aria-label="Availability calendar"></div><div class="availability-legend"><span><i class="legend-dot available"></i> Available</span><span><i class="legend-dot unavailable"></i> Not available</span><span><i class="legend-dot unmarked"></i> Not marked</span></div></div></section>
+<section id="profileView" class="view hidden">
+  <div class="page-head"><div><p class="eyebrow">ACCOUNT</p><h2>Profile</h2><p class="muted">Manage your name, positions, email, and password.</p></div></div>
+  <div class="profile-grid">
+    <form id="profileForm" class="glass-card section-card profile-form">
+      <div class="section-head"><div><h3>Personal information</h3><p class="muted">Update the details associated with your account.</p></div></div>
+      <label for="profileName">Name</label><input id="profileName" class="input" autocomplete="name" required>
+      <label for="profileEmail">Email</label><input id="profileEmail" class="input" type="email" autocomplete="email" required>
+      <label>Position(s)</label><div id="profilePositions" class="checkbox-grid compact"></div>
+      <button class="btn btn-primary full" type="submit">Save profile</button><p id="profileMsg" class="form-msg" aria-live="polite"></p>
+    </form>
+    <form id="profilePasswordForm" class="glass-card section-card profile-form">
+      <div class="section-head"><div><h3>Change password</h3><p class="muted">Choose a new password you have not used before.</p></div></div>
+      <label for="profileCurrentPassword">Current password</label><div class="password-field"><input id="profileCurrentPassword" class="input" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-password-target="profileCurrentPassword" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="m4 4 16 16"></path></svg></button></div>
+      <label for="profileNewPassword">New password</label><div class="password-field"><input id="profileNewPassword" class="input" type="password" autocomplete="new-password" minlength="6" required><button class="password-toggle" type="button" data-password-target="profileNewPassword" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="m4 4 16 16"></path></svg></button></div>
+      <label for="profileConfirmPassword">Confirm new password</label><div class="password-field"><input id="profileConfirmPassword" class="input" type="password" autocomplete="new-password" minlength="6" required><button class="password-toggle" type="button" data-password-target="profileConfirmPassword" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="m4 4 16 16"></path></svg></button></div>
+      <button class="btn btn-primary full" type="submit">Update password</button><p id="profilePasswordMsg" class="form-msg" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
 <section id="usersView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>User Management</h2><p class="muted">Manage accounts, roles, status and positions.</p></div></div><div class="glass-card section-card"><div class="toolbar"><input id="userSearch" class="input" placeholder="Search name or email"><select id="roleFilter" class="input"><option value="">All roles</option><option value="admin">Admin</option><option value="user">User</option></select></div><div id="usersTable" class="table-wrap"></div></div></section>
-<section id="musiciansView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>Musicians</h2><p class="muted">Edit or archive musicians and their dedicated positions.</p></div><button class="btn btn-primary" id="addMusicianBtn">+ Add Musician</button></div><div class="glass-card section-card"><div id="musicianList" class="schedule-list"></div></div></section>
+<section id="musiciansView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>Musicians</h2><p class="muted">Edit musicians, manage their dedicated positions, or permanently delete them.</p></div><button class="btn btn-primary" id="addMusicianBtn">+ Add Musician</button></div><div class="glass-card section-card"><div id="musicianList" class="schedule-list"></div></div></section>
 </main></div></div>
 <div id="modal" class="modal hidden"><div id="modalBox" class="modal-box glass-card"></div></div><div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
   
 </script><script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/app.js"></script>
-<script>
-  const sea = document.querySelector('.sea');
-
-  for (let i = 0; i < 100; i++) {
-    const wave = document.createElement('div');
-    wave.className = 'wave';
-
-    const fade = document.createElement('div');
-    fade.className = 'wave-fade';
-
-    const translate = document.createElement('div');
-    translate.className = 'wave-translate';
-
-    const skew = document.createElement('div');
-    skew.className = 'wave-skew';
-
-    const graphic = document.createElement('div');
-    graphic.className = 'wave-graphic';
-
-    skew.appendChild(graphic);
-    translate.appendChild(skew);
-    fade.appendChild(translate);
-    wave.appendChild(fade);
-    sea.appendChild(wave);
-
-    const delay = -(i * 2000 / 100);
-
-    fade.style.animationDelay = `${delay}ms`;
-    translate.style.animationDelay = `${delay - 1000}ms`;
-    skew.style.animationDelay = `${delay}ms`;
-  }
-</script>
 </body></html>
