@@ -27,7 +27,24 @@ function showAuth(mode='login'){
   $('app').classList.add('hidden');
   $('loginForm').classList.toggle('hidden',mode!=='login');
   $('signupForm').classList.toggle('hidden',mode!=='signup');
-  $('recoveryForm').classList.toggle('hidden',mode!=='recovery');
+}
+function clearSignedOutForms(){
+  ['loginForm','signupForm','profileForm','profilePasswordForm','passwordResetForm'].forEach(id=>$(id)?.reset());
+  document.querySelectorAll('.password-toggle').forEach(button=>{
+    const input=$(button.dataset.passwordTarget);
+    if(input)input.type='password';
+    button.classList.remove('is-visible');
+    button.setAttribute('aria-label','Show password');
+    button.setAttribute('aria-pressed','false');
+  });
+  document.querySelectorAll('.form-msg').forEach(message=>{message.textContent=''});
+  $('passwordResetDialog')?.classList.add('hidden');
+}
+function redirectToPasswordReset(){
+  const resetUrl=new URL('reset-password.html',window.location.href);
+  resetUrl.search=window.location.search;
+  resetUrl.hash=window.location.hash;
+  window.location.replace(resetUrl.href);
 }
 $('continueAuth').onclick=()=>showAuth('login');
 $('signupLink').onclick=()=>showAuth('signup');
@@ -76,7 +93,7 @@ $('passwordResetForm').onsubmit=async event=>{
   $('passwordResetSubmit').textContent='Sending...';
   $('passwordResetMessage').textContent='Sending password reset email...';
   try{
-    const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.href.split('#')[0]});
+    const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:new URL('reset-password.html',window.location.href).href});
     if(error)throw new Error(error.message);
     $('passwordResetMessage').textContent='If an account exists for this email, a password reset link is on its way.';
     $('passwordResetSubmit').textContent='Email sent';
@@ -87,23 +104,6 @@ $('passwordResetForm').onsubmit=async event=>{
   }
 };
 
-$('recoveryForm').onsubmit=async e=>{
-  e.preventDefault();
-  const password=$('recoveryPassword').value;
-  if(password!==$('recoveryPasswordConfirm').value){$('recoveryMsg').textContent='The passwords do not match.';return}
-  $('recoveryMsg').textContent='Updating password...';
-  let data,error;
-  try{({data,error}=await supabaseClient.auth.updateUser({password}))}
-  catch(err){$('recoveryMsg').textContent=`Unable to update password: ${err.message}`;return}
-  if(error){$('recoveryMsg').textContent=`Unable to update password: ${error.message}`;return}
-  $('recoveryMsg').textContent='Password updated. Signing you in...';
-  try{
-    const {data:sessionData,error:sessionError}=await supabaseClient.auth.getSession();
-    if(sessionError)throw sessionError;
-    if(!sessionData.session)throw new Error('Password updated. Please log in with your new password.');
-    await boot(sessionData.session);
-  }catch(err){$('recoveryMsg').textContent=err.message}
-};
 async function bootstrapAccount(){
   const {data,error}=await supabaseClient.rpc('bootstrap_my_account');
   if(error) throw new Error(`Account setup failed: ${error.message}`);
@@ -157,7 +157,12 @@ $('signupForm').onsubmit=async e=>{
   }
 };
 
-$('logoutBtn').onclick=async()=>{await supabaseClient.auth.signOut()};
+$('logoutBtn').onclick=async()=>{
+  try{
+    const {error}=await supabaseClient.auth.signOut();
+    if(error)throw error;
+  }catch(error){toast(`Unable to log out: ${error.message}`)}
+};
 document.querySelectorAll('.nav').forEach(b=>{
   const label=b.querySelector('span')?.textContent.trim();
   if(label){b.setAttribute('aria-label',label);b.title=label}
@@ -410,6 +415,28 @@ async function saveNewMusician(){const name=$('amName').value.trim(),ids=[...doc
 
 function subscribeRealtime(){if(realtimeChannel)return;realtimeChannel=supabaseClient.channel('worshipflow-v4-live').on('postgres_changes',{event:'*',schema:'public',table:'schedules'},async()=>{schedules=await getSchedules();myLineupCache=null;await refreshScheduleConflicts(true);renderMyLineup()}).on('postgres_changes',{event:'*',schema:'public',table:'schedule_assignments'},async()=>{myLineupCache=null;await refreshScheduleConflicts(true);renderMyLineup()}).on('postgres_changes',{event:'*',schema:'public',table:'musician_availability'},async(payload)=>{if(payload.new?.service_date)scheduleAvailabilityCache.delete(payload.new.service_date);if(payload.old?.service_date)scheduleAvailabilityCache.delete(payload.old.service_date);await refreshScheduleConflicts(true)}).on('postgres_changes',{event:'*',schema:'public',table:'musicians'},async()=>{musicians=await getMusicians();if(currentProfile?.role==='admin')renderMusicians();renderMyPositions();renderDashboard();renderCalendar()}).on('postgres_changes',{event:'*',schema:'public',table:'profiles'},async()=>{if(session){try{const previousRole=currentProfile.role;currentProfile=await getProfile();if(previousRole!==currentProfile.role){scheduleAvailabilityCache.clear();await refreshScheduleConflicts()}if(currentProfile.role==='admin'){users=await getAllUsers();renderUsers()}renderDashboard();renderCalendar();renderMyPositions();document.querySelectorAll('.admin-only').forEach(x=>x.classList.toggle('hidden',currentProfile.role!=='admin'))}catch(e){console.warn(e)}}}).subscribe()}
 
-supabaseClient.auth.onAuthStateChange(async(event,s)=>{if(event==='SIGNED_OUT'){session=null;currentProfile=null;users=[];scheduleConflicts={};scheduleConflictError='';scheduleAvailabilityCache.clear();myLineupCache=null;if(realtimeChannel){await supabaseClient.removeChannel(realtimeChannel);realtimeChannel=null}showWelcome();return}if(event==='PASSWORD_RECOVERY'){showAuth('recovery');return}if(event==='USER_UPDATED'&&!$('recoveryForm').classList.contains('hidden'))return;if(s&&event!=='INITIAL_SESSION'){try{await boot(s)}catch(e){console.error(e);toast(e.message)}}});
+supabaseClient.auth.onAuthStateChange(async(event,s)=>{
+  if(event==='SIGNED_OUT'){
+    session=null;currentProfile=null;users=[];scheduleConflicts={};scheduleConflictError='';
+    scheduleAvailabilityCache.clear();myLineupCache=null;clearSignedOutForms();
+    if(realtimeChannel){await supabaseClient.removeChannel(realtimeChannel);realtimeChannel=null}
+    showWelcome();
+    return;
+  }
+  if(event==='PASSWORD_RECOVERY'){redirectToPasswordReset();return}
+  if(s&&event!=='INITIAL_SESSION'){try{await boot(s)}catch(e){console.error(e);toast(e.message)}}
+});
 
-(async()=>{try{positions=await getPositions()}catch(e){console.error(e);positions=[]}renderSignupPositions();const {data}=await supabaseClient.auth.getSession();if(data.session){const recoveryRequested=new URLSearchParams(window.location.hash.slice(1)).get('type')==='recovery';if(recoveryRequested){showAuth('recovery');return}try{await boot(data.session)}catch(e){console.error(e);showAuth('login');toast(e.message)}}else showWelcome()})();
+(async()=>{
+  if(new URLSearchParams(window.location.hash.slice(1)).get('type')==='recovery'){
+    redirectToPasswordReset();
+    return;
+  }
+  try{positions=await getPositions()}catch(e){console.error(e);positions=[]}
+  renderSignupPositions();
+  const {data,error}=await supabaseClient.auth.getSession();
+  if(error){console.error('Unable to read the current session:',error);showWelcome();return}
+  if(data.session){
+    try{await boot(data.session)}catch(e){console.error(e);showAuth('login');toast(e.message)}
+  }else showWelcome();
+})();

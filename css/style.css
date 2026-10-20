@@ -2375,8 +2375,180 @@ body {
   display: none;
 }
 
+#authScreen .reset-error {
+  color: #ffaaaa;
+}
+
+#authScreen #backToLogin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  text-decoration: none;
+}
+
 @media (max-width: 480px) {
   .password-reset-card {
     padding: 28px 22px;
+  }
+}
+
+#app button,
+.modal button,
+#passwordResetDialog button {
+  transition:
+    background-color .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    box-shadow .18s ease,
+    filter .18s ease,
+    transform .16s ease;
+}
+
+#app button:active:not(:disabled),
+.modal button:active:not(:disabled),
+#passwordResetDialog button:active:not(:disabled) {
+  transform: scale(.97);
+}
+
+#app button:disabled,
+.modal button:disabled,
+#passwordResetDialog button:disabled {
+  cursor: wait;
+  opacity: .68;
+}
+
+#app .input,
+#app select.input,
+.modal .input,
+#passwordResetDialog .input {
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+#app .input:focus,
+#app select.input:focus,
+.modal .input:focus,
+#passwordResetDialog .input:focus {
+  border-color: #59aaff;
+  box-shadow: 0 0 0 3px rgba(22, 139, 255, .2);
+}
+
+#app .section-card,
+#app .stat-card,
+#app .schedule-item,
+#app .lineup-card,
+#app .list-row {
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background-color .2s ease;
+}
+
+#app .stat-card:hover,
+#app .schedule-item:hover,
+#app .lineup-card:hover {
+  border-color: rgba(110, 184, 255, .42);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24);
+  transform: translateY(-2px);
+}
+
+#app .list-row:hover {
+  background: rgba(255, 255, 255, .025);
+}
+
+#app .form-msg:not(:empty) {
+  animation: wfMessageEnter .2s ease-out both;
+}
+
+@keyframes wfMessageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal:not(.hidden) {
+  animation: wfOverlayEnter .18s ease-out both;
+}
+
+.modal:not(.hidden) .modal-box {
+  animation: wfDialogEnter .22s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+.discard-confirm-card {
+  animation: wfDialogEnter .2s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+@keyframes wfOverlayEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes wfDialogEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+  animation: wfToastEnter .22s ease-out both;
+}
+
+@keyframes wfToastEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #app button,
+  .modal button,
+  #passwordResetDialog button,
+  #app .input,
+  #app select.input,
+  .modal .input,
+  #passwordResetDialog .input,
+  #app .section-card,
+  #app .stat-card,
+  #app .schedule-item,
+  #app .lineup-card,
+  #app .list-row,
+  .toast {
+    transition-duration: .01ms !important;
+  }
+
+  .modal:not(.hidden),
+  .modal:not(.hidden) .modal-box,
+  .discard-confirm-card,
+  .toast.show,
+  #app .form-msg:not(:empty) {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

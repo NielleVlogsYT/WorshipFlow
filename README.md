@@ -62,7 +62,7 @@ Never put a service_role/secret key in Vercel frontend code.
 Supabase Dashboard → Authentication → URL Configuration:
 
 - Site URL: your Vercel URL
-- Add your app URL to Redirect URLs for email confirmation and password resets.
+- Add your app URL and `<your-app-url>/reset-password.html` to Redirect URLs for email confirmation and password resets.
 
 For initial testing you may temporarily disable email confirmation, then turn it back on for production.
 
@@ -70,7 +70,7 @@ For an existing v4 database, run `supabase/migration_profile_self_management.sql
 
 For an existing database, also run `supabase/migration_signup_duplicate_guard.sql` to enable case-insensitive duplicate-name checks and uniqueness for profile names. The signup name check also checks existing Auth users. Supabase Auth prevents duplicate email accounts; the signup form detects Supabase's duplicate-email response and asks the user to log in or use another address.
 
-Email changes follow the project's Supabase confirmation settings. When confirmation is required, users must verify the new address before it becomes active. Password changes require the current password.
+Password reset emails open the dedicated `reset-password.html` page. After changing the password, users return to the login page and sign in with the new password. Email changes follow the project's Supabase confirmation settings. When confirmation is required, users must verify the new address before it becomes active. Profile password changes require the current password.
 
 ## 5. Test signup
 
