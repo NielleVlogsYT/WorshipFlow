@@ -1,23 +1,6 @@
 let session=null,currentProfile=null,positions=[],musicians=[],schedules=[],users=[],scheduleConflicts={},scheduleConflictError='',scheduleConflictRequest=0,schedulePreviewRequest=0,myLineupRenderRequest=0,scheduleAvailabilityCache=new Map(),myLineupCache=null,calendarDate=new Date(),availabilityCalendarDate=new Date(),availabilitySelectedStatus=null,availabilityRenderToken=0,availabilitySavedStatuses={},availabilityPendingChanges={},modalEditSnapshot=null,modalHistoryGuard=false,discardConfirmationOpen=false,realtimeChannel=null,editingScheduleAssignments=[];
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
-const dashboardMotionPreferenceKey='worshipflow-dashboard-motion';
-const reducedMotionQuery=window.matchMedia('(prefers-reduced-motion: reduce)');
-let dashboardMotionPreference=null;
-try{
-  const savedMotionPreference=localStorage.getItem(dashboardMotionPreferenceKey);
-  if(savedMotionPreference==='enabled'||savedMotionPreference==='disabled')dashboardMotionPreference=savedMotionPreference==='enabled';
-}catch(error){console.warn(`Unable to read dashboard motion preference: ${error.message}`)}
-function applyDashboardMotionPreference(){
-  const enabled=dashboardMotionPreference??!reducedMotionQuery.matches;
-  $('app').classList.toggle('motion-enabled',enabled);
-  const button=$('dashboardMotionToggle');
-  button.textContent=`Animations: ${enabled?'On':'Off'}`;
-  button.setAttribute('aria-pressed',String(enabled));
-  button.setAttribute('aria-label',enabled?'Disable dashboard animations':'Enable dashboard animations');
-  button.title=enabled?'Disable dashboard animations':'Enable dashboard animations';
-}
-applyDashboardMotionPreference();
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),3000)}
 function openModal(html){modalEditSnapshot=null;discardConfirmationOpen=false;releaseModalHistoryGuard();$('modalBox').innerHTML=html;$('modal').classList.remove('hidden')}
 function captureModalForm(){return JSON.stringify([...$('modalBox').querySelectorAll('input,select,textarea')].map(input=>[input.type==='checkbox'||input.type==='radio'?input.checked:input.value]))}
@@ -191,15 +174,6 @@ $('sidebarToggle').onclick=()=>{
   $('sidebarToggle').setAttribute('aria-label',collapsed?'Expand navigation':'Collapse navigation');
   $('sidebar').parentElement.classList.toggle('sidebar-collapsed',collapsed);
 };
-$('dashboardMotionToggle').onclick=()=>{
-  dashboardMotionPreference=!$('app').classList.contains('motion-enabled');
-  try{localStorage.setItem(dashboardMotionPreferenceKey,dashboardMotionPreference?'enabled':'disabled')}
-  catch(error){console.warn(`Unable to save dashboard motion preference: ${error.message}`)}
-  applyDashboardMotionPreference();
-};
-reducedMotionQuery.addEventListener('change',()=>{
-  if(dashboardMotionPreference===null)applyDashboardMotionPreference();
-});
 $('profileForm').onsubmit=async event=>{
   event.preventDefault();
   const name=$('profileName').value.trim(),email=$('profileEmail').value.trim();

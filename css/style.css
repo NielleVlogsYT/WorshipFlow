@@ -2103,17 +2103,6 @@ body:has(#app:not(.hidden)) .sea {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  #app:not(.motion-enabled) *,
-  #app:not(.motion-enabled) *::before,
-  #app:not(.motion-enabled) *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-  }
-}
-
 .layout {
   display: flex;
   align-items: stretch;
@@ -2325,12 +2314,6 @@ body:has(#app:not(.hidden)) .sea {
 
   #app .layout.sidebar-collapsed .sidebar {
     display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #app:not(.motion-enabled) .layout .sidebar {
-    transition-duration: .01ms !important;
   }
 }
 
@@ -2555,41 +2538,10 @@ body:has(#app:not(.hidden)) .sea {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  #app:not(.motion-enabled) button,
-  #app:not(.motion-enabled) .modal button,
-  #app:not(.motion-enabled) #passwordResetDialog button,
-  #app:not(.motion-enabled) .input,
-  #app:not(.motion-enabled) select.input,
-  #app:not(.motion-enabled) .modal .input,
-  #app:not(.motion-enabled) #passwordResetDialog .input,
-  #app:not(.motion-enabled) .section-card,
-  #app:not(.motion-enabled) .stat-card,
-  #app:not(.motion-enabled) .schedule-item,
-  #app:not(.motion-enabled) .lineup-card,
-  #app:not(.motion-enabled) .list-row,
-  #app:not(.motion-enabled) .toast {
-    transition-duration: .01ms !important;
-  }
-
-  #app:not(.motion-enabled) .modal:not(.hidden),
-  #app:not(.motion-enabled) .modal:not(.hidden) .modal-box,
-  #app:not(.motion-enabled) .discard-confirm-card,
-  #app:not(.motion-enabled) .toast.show,
-  #app:not(.motion-enabled) .form-msg:not(:empty) {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-}
-
 #app .topbar {
   background: rgba(10, 15, 25, .78);
   border-bottom-color: rgba(100, 160, 220, .22);
   -webkit-backdrop-filter: blur(18px);
-}
-
-#app .motion-toggle {
-  white-space: nowrap;
 }
 
 #app .layout {
