@@ -1781,20 +1781,27 @@ body:has(#app:not(.hidden)) .sea {
   background: linear-gradient(120deg, rgba(37, 99, 235, .16), rgba(13, 148, 136, .12), rgba(7, 11, 20, .35));
 }
 
-.dashboard-carousel-track {
+.dashboard-carousel {
   position: absolute;
   top: 50%;
   left: 0;
-  z-index: 0;
-  display: flex;
-  width: max-content;
+  z-index: 1;
+  width: 100%;
   height: 360px;
+  overflow: hidden;
   opacity: .35;
   transform: translateY(-50%);
-  animation: authCarouselScroll 30s linear infinite;
-  will-change: transform;
   -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
   mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+}
+
+.dashboard-carousel-track {
+  position: relative;
+  display: flex;
+  width: max-content;
+  height: 100%;
+  animation: authCarouselScroll 30s linear infinite;
+  will-change: transform;
 }
 
 .dashboard-carousel-track img {
@@ -2623,7 +2630,7 @@ body:has(#app:not(.hidden)) .sea {
 }
 
 @media (max-width: 600px) {
-  .dashboard-carousel-track {
+  .dashboard-carousel {
     height: 300px;
   }
 }
