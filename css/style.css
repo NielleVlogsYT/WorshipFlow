@@ -1740,40 +1740,61 @@ body {
 #app {
   min-height: 100vh;
   isolation: isolate;
+  position: relative;
+  z-index: 1;
   background: transparent;
   font-size: 17px;
   line-height: 1.55;
 }
 
+body:has(#app:not(.hidden)) .sea {
+  display: none;
+}
+
 .dashboard-background {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
+  isolation: isolate;
   overflow: hidden;
   pointer-events: none;
+  background: #070b14;
+}
+
+.dashboard-background::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  z-index: 1;
   background:
-    linear-gradient(180deg, rgba(7, 11, 20, .34), rgba(7, 11, 20, .68)),
-    radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    radial-gradient(circle at 30% 40%, rgba(37, 99, 235, .28), transparent 35%),
+    radial-gradient(circle at 70% 60%, rgba(13, 148, 136, .22), transparent 35%),
+    radial-gradient(circle at 50% 50%, rgba(99, 102, 241, .12), transparent 45%);
+  animation: authAmbientDrift 18s ease-in-out infinite alternate;
 }
 
 .dashboard-background::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, rgba(37, 99, 235, .12), rgba(13, 148, 136, .1), rgba(7, 11, 20, .2));
+  z-index: 2;
+  background: linear-gradient(120deg, rgba(37, 99, 235, .16), rgba(13, 148, 136, .12), rgba(7, 11, 20, .35));
 }
 
 .dashboard-carousel-track {
   position: absolute;
   top: 50%;
   left: 0;
+  z-index: 0;
   display: flex;
   width: max-content;
-  height: min(48vh, 440px);
-  min-height: 300px;
-  opacity: .16;
+  height: 360px;
+  opacity: .35;
   transform: translateY(-50%);
-  animation: authCarouselScroll 42s linear infinite;
+  animation: authCarouselScroll 30s linear infinite;
+  will-change: transform;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
 }
 
 .dashboard-carousel-track img {
@@ -1787,6 +1808,7 @@ body {
 .dashboard-floating-boxes {
   position: absolute;
   inset: 0;
+  z-index: 3;
   overflow: hidden;
 }
 
@@ -1796,7 +1818,7 @@ body {
   left: var(--left);
   width: var(--size);
   height: var(--size);
-  border: 1px solid rgba(140, 205, 255, .28);
+  border: 1px solid rgba(140, 205, 255, .45);
   border-radius: 3px;
   opacity: 0;
   animation: floatingBoxRise var(--duration) linear infinite;
@@ -2550,5 +2572,58 @@ body {
   #app .form-msg:not(:empty) {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+#app .topbar {
+  background: rgba(10, 15, 25, .78);
+  border-bottom-color: rgba(100, 160, 220, .22);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+#app .layout {
+  position: relative;
+  z-index: 1;
+}
+
+#app .sidebar {
+  background: rgba(10, 15, 25, .76);
+}
+
+#app .view > .page-head,
+#app .view > .stats-grid,
+#app .view > .grid-2,
+#app .view > .profile-grid,
+#app .view > .section-card,
+#app .view > .schedule-list {
+  animation: dashboardContentEnter .36s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+#app .view > .stats-grid {
+  animation-delay: .04s;
+}
+
+#app .view > .grid-2,
+#app .view > .profile-grid,
+#app .view > .section-card,
+#app .view > .schedule-list {
+  animation-delay: .08s;
+}
+
+@keyframes dashboardContentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-carousel-track {
+    height: 300px;
   }
 }
