@@ -1,7 +1,16 @@
 const resetHashParams=new URLSearchParams(window.location.hash.slice(1));
 const resetQueryParams=new URLSearchParams(window.location.search);
-let hasRecoveryLink=resetHashParams.get('type')==='recovery'||resetQueryParams.get('type')==='recovery';
+const hasAuthCallback=resetQueryParams.has('code')||resetHashParams.has('access_token')||resetQueryParams.get('type')==='recovery'||resetHashParams.get('type')==='recovery';
+const recoveryClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
+  auth:{
+    storageKey:'worshipflow-password-recovery',
+    storage:window.sessionStorage
+  }
+});
+let recoveryVerified=false;
 let recoverySession=null;
+let callbackHandled=false;
+let callbackResolutionTimer=null;
 
 function setResetStatus(heading,message,isError=false){
   document.getElementById('resetStatusHeading').textContent=heading;
@@ -14,11 +23,19 @@ function setResetStatus(heading,message,isError=false){
 }
 
 function showResetPasswordForm(session){
-  if(!hasRecoveryLink||!session)return;
+  if(!recoveryVerified||!session)return;
   recoverySession=session;
   document.getElementById('resetPasswordStatus').classList.add('hidden');
   document.getElementById('resetPasswordForm').classList.remove('hidden');
   document.getElementById('newPassword').focus();
+}
+
+function showUnrelatedAuthCallback(){
+  document.getElementById('resetPasswordStatus').classList.remove('hidden');
+  document.getElementById('resetPasswordForm').classList.add('hidden');
+  document.getElementById('resetStatusHeading').textContent='Email link verified';
+  document.getElementById('resetStatusMessage').textContent='This link did not start a password reset. Return to the login page and sign in.';
+  document.getElementById('backToLogin').classList.remove('hidden');
 }
 
 document.querySelectorAll('.password-toggle').forEach(button=>{
@@ -33,16 +50,31 @@ document.querySelectorAll('.password-toggle').forEach(button=>{
   });
 });
 
-supabaseClient.auth.onAuthStateChange((event,session)=>{
+recoveryClient.auth.onAuthStateChange(async(event,session)=>{
   if(event==='PASSWORD_RECOVERY'){
-    hasRecoveryLink=true;
+    callbackHandled=true;
+    if(callbackResolutionTimer)clearTimeout(callbackResolutionTimer);
+    recoveryVerified=true;
     showResetPasswordForm(session);
+    return;
+  }
+  if(event==='SIGNED_IN'&&hasAuthCallback&&!recoveryVerified){
+    callbackResolutionTimer=window.setTimeout(async()=>{
+      if(recoveryVerified)return;
+      callbackHandled=true;
+      const {error}=await recoveryClient.auth.signOut({scope:'local'});
+      if(error){
+        setResetStatus('Unable to finish sign-in safely',error.message,true);
+        return;
+      }
+      showUnrelatedAuthCallback();
+    },1500);
   }
 });
 
 document.getElementById('resetPasswordForm').addEventListener('submit',async event=>{
   event.preventDefault();
-  if(!hasRecoveryLink||!recoverySession){
+  if(!recoveryVerified||!recoverySession){
     setResetStatus('Reset link unavailable','This password reset link is invalid or has expired. Request a new reset email and try again.',true);
     return;
   }
@@ -58,10 +90,10 @@ document.getElementById('resetPasswordForm').addEventListener('submit',async eve
   button.textContent='Updating...';
   message.textContent='Updating your password...';
   try{
-    const {error}=await supabaseClient.auth.updateUser({password});
+    const {error}=await recoveryClient.auth.updateUser({password});
     if(error)throw new Error(error.message);
     passwordUpdated=true;
-    const {error:signOutError}=await supabaseClient.auth.signOut({scope:'local'});
+    const {error:signOutError}=await recoveryClient.auth.signOut({scope:'local'});
     if(signOutError)throw new Error(`The password was updated, but the recovery session could not be cleared: ${signOutError.message}`);
     document.getElementById('resetPasswordForm').reset();
     document.querySelectorAll('.password-toggle').forEach(toggle=>{
@@ -84,14 +116,40 @@ document.getElementById('resetPasswordForm').addEventListener('submit',async eve
 });
 
 (async()=>{
-  const {data,error}=await supabaseClient.auth.getSession();
+  const {data,error}=await recoveryClient.auth.getSession();
   if(error){
     setResetStatus('Unable to verify reset link',error.message,true);
     return;
   }
-  if(!hasRecoveryLink||!data.session){
+  if(recoveryVerified&&data.session){
+    showResetPasswordForm(data.session);
+    return;
+  }
+  if(!hasAuthCallback){
+    if(data.session){
+      const {error:signOutError}=await recoveryClient.auth.signOut({scope:'local'});
+      if(signOutError){
+        setResetStatus('Unable to clear an unverified session',signOutError.message,true);
+        return;
+      }
+    }
     setResetStatus('Reset link unavailable','This password reset link is invalid or has expired. Request a new reset email and try again.',true);
     return;
   }
-  showResetPasswordForm(data.session);
+  callbackResolutionTimer=window.setTimeout(async()=>{
+    if(recoveryVerified||callbackHandled)return;
+    const {data:currentSession,error:sessionError}=await recoveryClient.auth.getSession();
+    if(sessionError){
+      setResetStatus('Unable to verify reset link',sessionError.message,true);
+      return;
+    }
+    if(currentSession.session){
+      const {error:signOutError}=await recoveryClient.auth.signOut({scope:'local'});
+      if(signOutError){
+        setResetStatus('Unable to clear an unverified session',signOutError.message,true);
+        return;
+      }
+    }
+    setResetStatus('Reset link unavailable','This link did not verify as a password reset. Request a new reset email and try again.',true);
+  },1500);
 })();

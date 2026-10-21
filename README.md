@@ -72,6 +72,8 @@ For an existing database, also run `supabase/migration_signup_duplicate_guard.sq
 
 Password reset emails open the dedicated `reset-password.html` page. After changing the password, users return to the login page and sign in with the new password. Email changes follow the project's Supabase confirmation settings. When confirmation is required, users must verify the new address before it becomes active. Profile password changes require the current password.
 
+Keep the Supabase password-reset email template linked through `{{ .ConfirmationURL }}` so Supabase applies the requested `reset-password.html` redirect. Do not replace it with a direct link to the Site URL. Recovery sessions are isolated from the normal app session and the reset page only accepts a verified `PASSWORD_RECOVERY` event.
+
 ## 5. Test signup
 
 Create a new account:

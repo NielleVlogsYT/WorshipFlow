@@ -156,7 +156,32 @@
 <section id="musiciansView" class="view hidden"><div class="page-head"><div><p class="eyebrow">ADMIN</p><h2>Musicians</h2><p class="muted">Edit musicians, manage their dedicated positions, or permanently delete them.</p></div><button class="btn btn-primary" id="addMusicianBtn">+ Add Musician</button></div><div class="glass-card section-card"><div id="musicianList" class="schedule-list"></div></div></section>
 </main></div></div>
 <div id="modal" class="modal hidden"><div id="modalBox" class="modal-box glass-card"></div></div><div id="toast" class="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  
-</script><script src="js/config.js"></script><script src="js/supabase.js"></script><script src="js/app.js"></script>
+<script>
+(()=>{
+  const query=new URLSearchParams(window.location.search);
+  const hash=new URLSearchParams(window.location.hash.slice(1));
+  const hasAuthCallback=query.has('code')||query.has('error')||query.get('type')==='recovery'||hash.get('type')==='recovery'||hash.has('access_token');
+  if(hasAuthCallback){
+    window.__worshipflowAuthCallbackRedirecting=true;
+    const resetUrl=new URL('reset-password.html',window.location.href);
+    resetUrl.search=window.location.search;
+    resetUrl.hash=window.location.hash;
+    window.location.replace(resetUrl.href);
+  }
+})();
+</script>
+<script>
+if(!window.__worshipflowAuthCallbackRedirecting){
+  let previousScript=null;
+  ['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','js/config.js','js/supabase.js','js/app.js'].forEach(source=>{
+    const script=document.createElement('script');
+    script.src=source;
+    script.async=false;
+    script.onerror=()=>console.error(`Unable to load script: ${source}`);
+    if(previousScript)previousScript.after(script);
+    else document.body.append(script);
+    previousScript=script;
+  });
+}
+</script>
 </body></html>
